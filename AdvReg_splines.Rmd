@@ -1,0 +1,28 @@
+---
+title: "Splines"
+author: "Sander"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### What are splines and why do we care?
+In principle splines are a way of fitting smooth functions to data. 
+Smooth functions are ways of estimating a non-linear relationship, which include
+splines (lots of different types), kernel smoothers and local
+linear smoothers. Splines make more sense, so we will focus on those. 
+
+In principle it includes fitting polinomials 
+
+
+
+```{r}
+
+
+
+```
+
+
