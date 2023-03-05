@@ -2,15 +2,15 @@
 title: "Splines"
 author: "Sander"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## What I learned about fitting polinomials
-#when do we even need a polinomial?
+### What I learned about fitting polinomials
+##When do we even need a polinomial?
 
 In week two of the Advanced Regression Module we learned about fitting polinomials, 
 which one can do in many ways. 
@@ -47,6 +47,109 @@ even though the summary is statistically signficant (pval<0.05***)
 
 
 #How to fit a polinomial?
+
+There are many ways to fit a polinomial. 
+Let us start by fitting a I() to the lm() model. 
+A as-is I() variable allows the manipulation of variables within a lm() or glm().
+
+As explained by thomasleeper.com:
+
+_"One trick to formulas is that they don't evaluate their contents. So, for example, if we wanted to include x and x^2 in our model, we might intuit that we should type:_
+ 
+```{r}
+y ~ x + x^2 
+```
+
+_If we attempted to estimate a regression model using this formula, R would drop the x^2 term because it thinks it is a duplicate of x. We therefore have to either calculate and store all of the variables we want to include in the model in advance, or we need to use the I() “as-is” operator. To obtain our desired two-term formula, we could use I() as follows:_
+```{r}
+y ~ x + I(x^2)
+```
+
+
+_This tells R to calculate the values of x^2 before attempting to use the formula. Aside from calculating powers, I() can also be helpful when we want to rescale a variable for a model (e.g., to make two coefficients more comparable by using a common scale). Again, we simply wrap the relevant variable name in I():_
+
+```{r}
+y ~ I(2 * x)
+
+```
+_This formula would, in a linear regression, produce a coefficient half as large as the model for y~x."_
+
+
+
+##How to plot a plinomial?
+
+We observed that the triceps~age interaction might need a polinomial. 
+Let us fit a polinomial of 2, 3, and 4 degree. 
+
+
+```{r}
+library(magrittr)
+second<- lm(triceps~ age + I(age^2), data=data) 
+third<- lm(triceps~age + I(age^2) + I(age^3), data=data) 
+fourth<- lm(triceps~age + I(age^2)+ I(age^3) +I(age^4), data=data) 
+second[4]
+third[4]
+fourth[4]
+```
+
+
+And now let us visualise the fits. 
+Unfortunately there is no straightforward way to fit a polinomial line, line we do 
+for abline(), but there are ways around it.
+
+```{r}
+fits<-data.frame(second=second$fitted.values,
+           third=third$fitted.values,
+           fourth=fourth$fitted.values,
+           x=data$age)
+head(fits)
+
+
+```
+..and the plot itself is easier to do in ggplot2, at least for me (lol)
+
+```{r}
+library(ggplot2)
+
+ggplot()+
+  geom_point(data=data, aes(x=age, y=triceps))+
+  geom_line(data=fits, aes(x=x, y=second), col="red")+
+  geom_line(data=fits, aes(x=x, y=third), col="blue")+
+  geom_line(data=fits, aes(x=x, y=fourth), col="green")
+
+
+```
+
+
+But how do you decide which fit is the best fit?
+Anova should do
+
+```{r}
+
+anova(second, third)
+
+
+```
+```{r}
+anova(third, fourth)
+
+```
+fourth is better cause it has a lower RSS and is significantly a better fit than the previous ones. 
+
+Let us add some lovely confidence intervals to that
+
+```{r}
+pred4<-predict(fourth, interval = "confidence") %>% as.data.frame()
+pred4$x<-data$age
+names(pred4)
+ggplot()+
+  geom_line(data=pred4, aes(x=x, y=fit))+
+  geom_ribbon(aes(x = x, ymin = lwr, ymax = upr), data=pred4, fill = "blue", alpha = 0.2)+
+  geom_point(data=data, aes(x=age, y=triceps))
+
+```
+geom_line adds the line, geom_ribbon adds the cI, and geom_point adds the actual data points
+
 
 
 
