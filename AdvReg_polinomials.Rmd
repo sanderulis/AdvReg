@@ -1,0 +1,53 @@
+---
+title: "Splines"
+author: "Sander"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What I learned about fitting polinomials
+#when do we even need a polinomial?
+
+In week two of the Advanced Regression Module we learned about fitting polinomials, 
+which one can do in many ways. 
+We started off by looking at how does the data look like. Do we even need a polinomial?
+
+
+
+```{r} 
+data<-read.csv("data/triceps.csv")
+
+plot(data$triceps~data$age)
+```
+
+looks like we do, don't we? 
+Let us try to fit a simple linear regression line to the data. 
+
+```{r}
+linear<-lm(triceps~age, data=data)
+
+
+plot(data$triceps~data$age)
+abline(linear, col="red")
+```
+
+Plotting a simple line to the data reveals that:
+*the rise at age=0-5 and 
+*the falls at ages=5-12 
+are not captured by the line 
+
+```{r}
+summary(linear)
+```
+even though the summary is statistically signficant (pval<0.05***)
+
+
+#How to fit a polinomial?
+
+
+
+
